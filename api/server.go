@@ -18,7 +18,7 @@ func StartApiServer() {
 	app := iris.New()
 	app.Adapt(iris.DevLogger(), httprouter.New(), cors.New(cors.Options{AllowedOrigins: []string{"*"}}))
 
-	app.Post("/gif/:id", serveGif)
+	app.Get("/gif/:id", serveGif)
 	app.Post("/gifs/visibility/:id/:visible", gifVisibility)
 	app.Post("/gifs", GetGifs)
 
