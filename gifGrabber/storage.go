@@ -90,5 +90,9 @@ func SaveItem(item *FeedItem) (bool, error) {
 		}
 
 		file.Close()
+
+		break
 	}
+
+	return true, nil
 }
