@@ -1,5 +1,0 @@
-package gifGrabber
-
-func DownloadFile() {
-
-}

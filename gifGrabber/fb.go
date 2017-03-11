@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	accessToken = os.Getenv("FACEBOOK_TOKEN")
+	accessToken = os.Getenv("GIFJAM_FACEBOOK_TOKEN")
 )
 
 type FeedItem struct {

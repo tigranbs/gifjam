@@ -20,5 +20,15 @@ func main() {
 		return
 	}
 
-	fmt.Println("Only GIF Items Count ->", len(items))
+	for _, item :=range items {
+		new_file, err := gifGrabber.SaveItem(&item)
+		if err != nil {
+			fmt.Println("Unable to save file -> ", err.Error())
+			continue
+		}
+
+		if !new_file {
+			fmt.Println("Item Exists already -> ", item.Link)
+		}
+	}
 }
