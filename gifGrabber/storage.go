@@ -70,7 +70,7 @@ func SaveItem(item *FeedItem) (bool, error) {
 			return false, nil
 		}
 
-		res, err := http.Get(item.Link)
+		res, err := http.Get(strings.Replace(item.Link, " ", "", -1))
 		if err != nil {
 			log.Println("Unable to get Gif Image from url ", item.Link, " to save it to DB -> ", err.Error())
 			retry_count++
