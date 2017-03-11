@@ -1,10 +1,14 @@
 package gifGrabber
 
 import (
-	"fmt"
 	"encoding/json"
 	fb "github.com/huandu/facebook"
 	"os"
+	"net/http"
+	"log"
+	"time"
+	"strings"
+	"github.com/PuerkitoBio/goquery"
 )
 
 var (
@@ -32,8 +36,7 @@ func GetFeed(page_id string) ([]FeedItem, error) {
 
 	data_json, err := json.Marshal(res.Get("data"))
 	if err != nil {
-		fmt.Println("Unabel to unmarshal data -> ", err.Error())
-		return
+		return nil, err
 	}
 
 	items := []FeedItem{}
@@ -44,4 +47,57 @@ func GetFeed(page_id string) ([]FeedItem, error) {
 	}
 
 	return items, nil
+}
+
+func FilterGifs(items []FeedItem) ([]FeedItem, error) {
+	gif_items := []FeedItem{}
+	for _, item :=range items {
+		if item.Type != "link" {
+			continue
+		}
+
+		retry_count := 0
+
+		for {
+			if retry_count > 20 {
+				log.Println("Http Request Retry count existed for url", item.Link, " | Moving to the next element")
+				break
+			}
+
+			resp, err := http.Get(item.Link)
+			if err != nil {
+				log.Println("Unable to make a request to url", item.Link, "-> ", err.Error(), " | Trying again")
+				time.Sleep(time.Second * 1)
+				retry_count++
+				continue
+			}
+
+			content_type := resp.Header.Get("Content-Type")
+
+			// if this is a direct GIF link then adding it to our list
+			if strings.Contains(content_type, "image/gif") {
+				gif_items = append(gif_items, item)
+			} else if strings.Contains(content_type, "text/html") { // if this is an html content then probably GIF is inside meta "og:image" tag
+				document, err := goquery.NewDocumentFromReader(resp.Body)
+				if err != nil {
+					log.Println("Unable to read HTML content from url", item.Link, " | Trying again")
+					retry_count++
+					continue
+				}
+
+				attr, exists := document.Find(`meta[property="og:image"]`).Attr("content")
+				if !exists {
+					log.Println("There is No Gif for URl ->", item.Link)
+				} else {
+					// changing gif link to real image link
+					item.Link = attr
+					gif_items = append(gif_items, item)
+				}
+			}
+
+			break
+		}
+	}
+
+	return gif_items, nil
 }
