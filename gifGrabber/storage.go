@@ -120,3 +120,7 @@ func GetFileIO(id string) (int64, io.ReadCloser, error) {
 
 	return file.Size(), file, nil
 }
+
+func SetVisibility(id string, is_visible bool) error {
+	return db.C("fs.files").Update(bson.M{"_id": bson.ObjectIdHex(id)}, bson.M{"$set": bson.M{"metadata.visible": is_visible}})
+}

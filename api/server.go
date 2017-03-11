@@ -18,8 +18,9 @@ func StartApiServer() {
 	app := iris.New()
 	app.Adapt(iris.DevLogger(), httprouter.New(), cors.New(cors.Options{AllowedOrigins: []string{"*"}}))
 
-	app.Post("/gifs", GetGifs)
 	app.Post("/gif/:id", serveGif)
+	app.Post("/gifs/visibility/:id/:visible", gifVisibility)
+	app.Post("/gifs", GetGifs)
 
 	// Setting address from ENV
 	app.Listen(os.Getenv("GIFJAM_SERVER_HOST"))
@@ -55,6 +56,7 @@ func serveGif(ctx *iris.Context) {
 
 	length, r, err := gifGrabber.GetFileIO(file_id)
 	if err != nil {
+		log.Println("Unable to get image from database -> ", err.Error())
 		ctx.JSON(http.StatusInternalServerError, obj{"error": "Unable to read Image file"})
 		return
 	}
@@ -64,4 +66,28 @@ func serveGif(ctx *iris.Context) {
 	ctx.SetHeader("Content-Length", strconv.FormatInt(length, 10))
 	ctx.SetHeader("Content-Type", "image/gif")
 	io.Copy(ctx, r)
+}
+
+func gifVisibility(ctx *iris.Context) {
+	file_id := ctx.Param("id")
+	if len(file_id) != 24 {
+		ctx.JSON(http.StatusNotFound, obj{"error": "Image Not Found!"})
+		return
+	}
+
+	visible := false
+
+	visible_param := ctx.Param("visible")
+	if visible_param == "1" {
+		visible = true
+	}
+
+	err := gifGrabber.SetVisibility(file_id, visible)
+	if err != nil {
+		log.Println("Unable to set image to visible -> ", err.Error())
+		ctx.JSON(http.StatusInternalServerError, obj{"error": "Unable to set image to visible"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, obj{})
 }
