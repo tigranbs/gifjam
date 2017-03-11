@@ -84,6 +84,11 @@ func FilterGifs(items []FeedItem) ([]FeedItem, error) {
 
 				attr, exists := document.Find(`meta[property="og:image"]`).Attr("content")
 				if !exists {
+					// trying again with og:url
+					attr, exists = document.Find(`meta[property="og:url"]`).Attr("content")
+				}
+
+				if !exists {
 					log.Println("There is No Gif for URl ->", item.Link)
 				} else {
 					// changing gif link to real image link
