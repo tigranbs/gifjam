@@ -96,3 +96,27 @@ func SaveItem(item *FeedItem) (bool, error) {
 
 	return true, nil
 }
+
+// Getting FileID's for downloading them from client
+func GetItems(offset, limit int) (ids []string, err error) {
+	files := []bson.M{}
+	err = storage.Find(bson.M{"metadata.visible": true}).Skip(offset).Limit(limit).All(&files)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, file :=range files {
+		ids = append(ids, file["_id"].(bson.ObjectId).Hex())
+	}
+
+	return ids, nil
+}
+
+func GetFileIO(id string) (int64, io.ReadCloser, error) {
+	file, err := storage.OpenId(bson.ObjectIdHex(id))
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return file.Size(), file, nil
+}

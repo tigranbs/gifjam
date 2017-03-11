@@ -22,6 +22,8 @@ type FeedItem struct {
 	Link string `json:"link"`
 	Picture string `json:"full_picture"`
 	Type string `json:"type"`
+	// This field used by Storage metadata
+	Visible bool `json:"-"`
 }
 
 func GetFeed(page_id string) ([]FeedItem, error) {

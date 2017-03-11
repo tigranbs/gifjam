@@ -1,9 +1,11 @@
 package main
 
 import (
-	"gifjam/gifGrabber"
+	_ "gifjam/gifGrabber"
+	"gifjam/api"
 )
 
 func main() {
-	gifGrabber.StartDownloader()
+	//go gifGrabber.StartDownloader()
+	api.StartApiServer()
 }
