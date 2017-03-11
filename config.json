@@ -1,0 +1,6 @@
+{
+  "host": ":6000",
+  "fb_pages": ["GeoGIF", "gifporn1", "GIFFunOfficial", "aantipriunil"],
+  "mongo": "mongodb://vm.loc/gifjam",
+  "fb_token": ""
+}

@@ -1,15 +1,16 @@
 package api
 
 import (
-	"gopkg.in/kataras/iris.v6"
-	"gopkg.in/kataras/iris.v6/adaptors/httprouter"
-	"os"
 	"gifjam/gifGrabber"
-	"net/http"
-	"log"
+	"gopkg.in/kataras/iris.v6"
 	"gopkg.in/kataras/iris.v6/adaptors/cors"
-	"strconv"
+	"gopkg.in/kataras/iris.v6/adaptors/httprouter"
 	"io"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
+	"gifjam/config"
 )
 
 type obj map[string]interface{}
@@ -22,8 +23,13 @@ func StartApiServer() {
 	app.Post("/gifs/visibility/:id/:visible", gifVisibility)
 	app.Post("/gifs", GetGifs)
 
+	host := os.Getenv("GIFJAM_SERVER_HOST")
+	if len(config.GlobalConfig.Host) > 0 {
+		host = config.GlobalConfig.Host
+	}
+
 	// Setting address from ENV
-	app.Listen(os.Getenv("GIFJAM_SERVER_HOST"))
+	app.Listen(host)
 }
 
 func GetGifs(ctx *iris.Context) {

@@ -2,35 +2,30 @@ package gifGrabber
 
 import (
 	"encoding/json"
-	fb "github.com/huandu/facebook"
-	"os"
-	"net/http"
-	"log"
-	"time"
-	"strings"
 	"github.com/PuerkitoBio/goquery"
-)
-
-var (
-	accessToken = os.Getenv("GIFJAM_FACEBOOK_TOKEN")
+	fb "github.com/huandu/facebook"
+	"log"
+	"net/http"
+	"strings"
+	"time"
 )
 
 type FeedItem struct {
-	ID string `json:"id"`
-	Message string `json:"message"`
+	ID          string `json:"id"`
+	Message     string `json:"message"`
 	CreatedTime string `json:"created_time"`
-	Link string `json:"link"`
-	Picture string `json:"full_picture"`
-	Type string `json:"type"`
+	Link        string `json:"link"`
+	Picture     string `json:"full_picture"`
+	Type        string `json:"type"`
 	// This field used by Storage metadata
 	Visible bool `json:"-"`
 }
 
 func GetFeed(page_id string) ([]FeedItem, error) {
-	res, err := fb.Get("/" + page_id + "/feed", fb.Params{
-		"access_token": accessToken,
-		"fields": "message,created_time,link,full_picture,type",
-		"limit": "100",
+	res, err := fb.Get("/"+page_id+"/feed", fb.Params{
+		"access_token": fbToken,
+		"fields":       "message,created_time,link,full_picture,type",
+		"limit":        "100",
 	})
 	if err != nil {
 		return nil, err
@@ -53,7 +48,7 @@ func GetFeed(page_id string) ([]FeedItem, error) {
 
 func FilterGifs(items []FeedItem) ([]FeedItem, error) {
 	gif_items := []FeedItem{}
-	for _, item :=range items {
+	for _, item := range items {
 		if item.Type != "link" {
 			continue
 		}

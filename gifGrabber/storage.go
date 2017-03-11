@@ -1,30 +1,34 @@
 package gifGrabber
 
 import (
-	"os"
-	"log"
 	"gopkg.in/mgo.v2"
-	"net/http"
 	"gopkg.in/mgo.v2/bson"
-	"time"
-	"strings"
 	"io"
+	"log"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+	"gifjam/config"
 )
-
 
 var (
 	mongoURL = os.Getenv("GIFJAM_MONGO")
-	session *mgo.Session
-	db *mgo.Database
-	storage *mgo.GridFS
+	session  *mgo.Session
+	db       *mgo.Database
+	storage  *mgo.GridFS
 )
 
-func init() {
+func initDB() {
+	if len(config.GlobalConfig.Mongo) > 0 {
+		mongoURL = config.GlobalConfig.Mongo
+	}
+
 	// making database on package init
 	var err error
 	session, err = mgo.Dial(mongoURL)
 	if err != nil {
-		log.Println("Unable to connect to MongoDB database as a storage backend at url[", mongoURL,"] -> ", err.Error())
+		log.Println("Unable to connect to MongoDB database as a storage backend at url[", mongoURL, "] -> ", err.Error())
 		os.Exit(1)
 	}
 
@@ -105,7 +109,7 @@ func GetItems(offset, limit int) (ids []string, err error) {
 		return nil, err
 	}
 
-	for _, file :=range files {
+	for _, file := range files {
 		ids = append(ids, file["_id"].(bson.ObjectId).Hex())
 	}
 
