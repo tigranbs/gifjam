@@ -76,6 +76,7 @@ func FilterGifs(items []FeedItem) ([]FeedItem, error) {
 				gif_items = append(gif_items, item)
 			} else if strings.Contains(content_type, "text/html") { // if this is an html content then probably GIF is inside meta "og:image" tag
 				document, err := goquery.NewDocumentFromReader(resp.Body)
+				resp.Body.Close()
 				if err != nil {
 					log.Println("Unable to read HTML content from url", item.Link, " | Trying again")
 					retry_count++

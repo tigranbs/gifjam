@@ -94,6 +94,7 @@ func SaveItem(item *FeedItem) (bool, error) {
 		}
 
 		file.Close()
+		res.Body.Close()
 
 		break
 	}
