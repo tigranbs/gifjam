@@ -107,7 +107,7 @@ func SaveItem(item *FeedItem) (bool, error) {
 func GetItems(offset, limit int) (ids []string, err error) {
 	files := []bson.M{}
 	//err = storage.Find(bson.M{"metadata.visible": true}).Skip(offset).Limit(limit).All(&files)
-	err = storage.Find(bson.M{"metadata.visible": true}).Skip(offset).Limit(limit).All(&files)
+	err = storage.Find(bson.M{}).Skip(offset).Limit(limit).All(&files)
 	if err != nil {
 		return ids, err
 	}
