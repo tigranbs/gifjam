@@ -95,6 +95,7 @@ func SaveItem(item *FeedItem) (bool, error) {
 
 		file.Close()
 		res.Body.Close()
+		res.Close = true
 
 		break
 	}
@@ -105,9 +106,10 @@ func SaveItem(item *FeedItem) (bool, error) {
 // Getting FileID's for downloading them from client
 func GetItems(offset, limit int) (ids []string, err error) {
 	files := []bson.M{}
+	//err = storage.Find(bson.M{"metadata.visible": true}).Skip(offset).Limit(limit).All(&files)
 	err = storage.Find(bson.M{"metadata.visible": true}).Skip(offset).Limit(limit).All(&files)
 	if err != nil {
-		return nil, err
+		return ids, err
 	}
 
 	for _, file := range files {
