@@ -19,19 +19,19 @@ var (
 )
 
 func ParseConfig() {
-	if len(os.Args) != 2 {
-		fmt.Println("Application should get only configuration file as an argument")
+	if len(os.Args) != 3 {
+		fmt.Println("Application should get [grab, server] parameters and configuration file as an argument")
 	}
 	// Parsing config file
-	conf_data, err := ioutil.ReadFile(os.Args[1])
+	conf_data, err := ioutil.ReadFile(os.Args[2])
 	if err != nil {
-		fmt.Println("Unable to read given configuration file", os.Args[1], "->", err.Error())
+		fmt.Println("Unable to read given configuration file", os.Args[2], "->", err.Error())
 		os.Exit(1)
 	}
 
 	err = json.Unmarshal(conf_data, &GlobalConfig)
 	if err != nil {
-		fmt.Println("Unable to parse given configuration file", os.Args[1], "->", err.Error())
+		fmt.Println("Unable to parse given configuration file", os.Args[2], "->", err.Error())
 		os.Exit(1)
 	}
 }

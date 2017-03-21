@@ -2,7 +2,6 @@ package gifGrabber
 
 import (
 	"log"
-	"time"
 	"os"
 	"gifjam/config"
 )
@@ -23,32 +22,27 @@ func StartDownloader() {
 		fbToken = config.GlobalConfig.FbToken
 	}
 
-	for {
-		items := []FeedItem{}
+	items := []FeedItem{}
 
-		for _, page :=range config.GlobalConfig.FbPages {
-			// getting Feed Items
-			it, err := GetFeed(page)
-			if err != nil {
-				log.Println("Unable to get Feed -> ", err.Error())
-				continue
-			}
-
-			items = append(items, it...)
+	for _, page :=range config.GlobalConfig.FbPages {
+		// getting Feed Items
+		it, err := GetFeed(page)
+		if err != nil {
+			log.Println("Unable to get Feed -> ", err.Error())
+			continue
 		}
 
-		if len(items) > 0 {
-			items, err := FilterGifs(items)
-			if err != nil {
-				log.Println("Unable to Filter Gifs -> ", err.Error())
-				time.Sleep(time.Second * API_CALL_INTERVAL)
-				continue
-			}
+		items = append(items, it...)
+	}
 
-			go SaveItems(items)
+	if len(items) > 0 {
+		items, err := FilterGifs(items)
+		if err != nil {
+			log.Println("Unable to Filter Gifs -> ", err.Error())
+			return
 		}
 
-		time.Sleep(time.Second * API_CALL_INTERVAL)
+		SaveItems(items)
 	}
 }
 
